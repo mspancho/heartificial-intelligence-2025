@@ -59,7 +59,6 @@ def train_model(data_folder, model_folder, verbose):
         features[i] = extract_CNN_features(record)
         labels[i] = load_label(record)
 
-
     # Train the models.
     if verbose:
         print('Training the model on the data...')
@@ -141,7 +140,6 @@ def extract_6_features(record):
 
     signal, fields = load_signals(record)
 
-
     # TO-DO: Update to compute per-lead features. Check lead order and update and use functions for reordering leads as needed.
 
     num_finite_samples = np.size(np.isfinite(signal))
@@ -163,10 +161,10 @@ def extract_CNN_features(record):
     signal, fields = load_signals(record)
 
     # normalize 0 to 1?
-    # truncate particularly large and small values?
+    #truncate particularly large and small values?
 
-    # print(f"signal type {type(signal)}")
-    # print(signal)
+    print(f"signal type {type(signal)}")
+    print(signal)
     return signal
 
 # Save your trained model.

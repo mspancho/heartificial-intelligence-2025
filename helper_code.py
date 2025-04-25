@@ -9,6 +9,7 @@ import os
 import scipy as sp
 import sys
 import wfdb
+import argparse
 
 ### Challenge variables
 age_string = '# Age:'
@@ -481,3 +482,15 @@ def sanitize_boolean_value(x):
         return 1
     else:
         return float('nan')
+    
+def get_parser_train():
+    description = 'Train the Challenge model.'
+    parser = argparse.ArgumentParser(description=description)
+    parser.add_argument('-d', '--data_folder', type=str, required=True)
+    parser.add_argument('-m', '--model_folder', type=str, required=True)
+    parser.add_argument('-v', '--verbose', action='store_true')
+    return parser
+
+
+
+
