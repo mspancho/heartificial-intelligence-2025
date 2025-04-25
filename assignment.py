@@ -9,6 +9,8 @@ import numpy as np
 import random
 import math
 from helper_code import *
+from preprocess import get_data, get_next_batch
+
 
 
 # ensures that we run only on cpu
@@ -30,7 +32,7 @@ def train(model, optimizer, train_inputs, train_labels):
    :return: None
    '''
 
-   
+
    batch_size = 256
    num_batches = len(train_inputs)// batch_size
    indices = tf.random.shuffle(tf.range(tf.shape(train_inputs)[0]))
