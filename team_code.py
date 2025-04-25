@@ -44,18 +44,21 @@ def train_model(data_folder, model_folder, verbose):
     if verbose:
         print('Extracting features and labels from the data...')
 
-    features = np.zeros((num_records, 6), dtype=np.float64)
+    # features = np.zeros((num_records, 6), dtype=np.float64)
+    features = np.zeros((num_records,), dtype=np.ndarray) # array of arrays with waveform data
+
     labels = np.zeros(num_records, dtype=bool)
 
     # Iterate over the records.
-    for i in range(num_records):
+    for i in range(len(records)):
         if verbose:
             width = len(str(num_records))
             print(f'- {i+1:>{width}}/{num_records}: {records[i]}...')
 
         record = os.path.join(data_folder, records[i])
-        features[i] = extract_features(record)
+        features[i] = extract_CNN_features(record)
         labels[i] = load_label(record)
+
 
     # Train the models.
     if verbose:
@@ -76,14 +79,14 @@ def train_model(data_folder, model_folder, verbose):
     # ===========
     model = init_MLP()
     model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=1e-3), loss=tf.keras.losses.BinaryCrossentropy())
-    model.fit(features, labels.astype(np.float32), epochs=10, batch_size=64)
+    # model.fit(features, labels.astype(np.float32), epochs=10, batch_size=64)
 
 
     # Create a folder for the model if it does not already exist.
     os.makedirs(model_folder, exist_ok=True)
 
     # Save the model.
-    save_tf_model(model_folder, model)
+    save_model(model_folder, model)
 
     if verbose:
         print('Done.')
@@ -123,7 +126,7 @@ def run_model(record, model, verbose):
 ################################################################################
 
 # Extract your features.
-def extract_features(record):
+def extract_6_features(record):
     header = load_header(record)
     age = get_age(header)
     sex = get_sex(header)
@@ -154,6 +157,17 @@ def extract_features(record):
     features = np.concatenate(([age], one_hot_encoding_sex, [signal_mean, signal_std]))
 
     return np.asarray(features, dtype=np.float32)
+
+def extract_CNN_features(record):
+    
+    signal, fields = load_signals(record)
+
+    # normalize 0 to 1?
+    # truncate particularly large and small values?
+
+    # print(f"signal type {type(signal)}")
+    # print(signal)
+    return signal
 
 # Save your trained model.
 def old_save_model(model_folder, model):
@@ -214,3 +228,36 @@ def init_MLP():
     ])
 
     return model
+
+
+# write out loss and call fn?
+
+
+def train(model, train_inputs, train_labels, epochs, batch_size):
+
+    num_batches = train_inputs // batch_size
+
+    for i in range(epochs):
+        for batch_num in range(len(num_batches)):
+
+            batch_inputs, batch_labels = get_next_batch(batch_num, train_inputs, train_labels, batch_size)
+
+
+            with tf.GradientTape() as tape:
+                y_pred = model.call(batch_inputs) 
+                loss = model.loss_fn(y_pred, batch_labels)
+
+                train_acc = model.accuracy(y_pred, batch_labels)
+                print(f"batch {batch_num} training accuracy: {train_acc}")
+
+        gradients = tape.gradient(loss, model.trainable_variables)
+        model.optimizer.apply_gradients(zip(gradients, model.trainable_variables))
+
+
+
+def get_next_batch(idx, inputs, labels, batch_size=100) -> tuple[np.ndarray, np.ndarray]:
+    """
+    Given an index, returns the next batch of data and labels. Ex. if batch_size is 5, 
+    the data will be a numpy matrix of size 5 * 32 * 32 * 3, and the labels returned will be a numpy matrix of size 5 * 10.
+    """
+    return (inputs[idx*batch_size:(idx+1)*batch_size], np.array(labels[idx*batch_size:(idx+1)*batch_size]))
