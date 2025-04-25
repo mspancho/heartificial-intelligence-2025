@@ -14,6 +14,7 @@ import numpy as np
 import os
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 import sys
+import tensorflow as tf
 
 from helper_code import *
 
@@ -33,6 +34,8 @@ def train_model(data_folder, model_folder, verbose):
         print('Finding the Challenge data...')
 
     records = find_records(data_folder)
+
+    
     num_records = len(records)
 
     if num_records == 0:
@@ -59,22 +62,29 @@ def train_model(data_folder, model_folder, verbose):
     if verbose:
         print('Training the model on the data...')
 
+
+    # ===========
     # This very simple model trains a random forest model with very simple features.
 
     # Define the parameters for the random forest classifier and regressor.
-    n_estimators = 12  # Number of trees in the forest.
-    max_leaf_nodes = 34  # Maximum number of leaf nodes in each tree.
-    random_state = 56  # Random state; set for reproducibility.
+    # n_estimators = 12  # Number of trees in the forest.
+    # max_leaf_nodes = 34  # Maximum number of leaf nodes in each tree.
+    # random_state = 56  # Random state; set for reproducibility.
 
-    # Fit the model.
-    model = RandomForestClassifier(
-        n_estimators=n_estimators, max_leaf_nodes=max_leaf_nodes, random_state=random_state).fit(features, labels)
+    # # Fit the model.
+    # model = RandomForestClassifier(
+    #     n_estimators=n_estimators, max_leaf_nodes=max_leaf_nodes, random_state=random_state).fit(features, labels)
+    # ===========
+    model = init_MLP()
+    model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=1e-3), loss=tf.keras.losses.BinaryCrossentropy())
+    model.fit(features, labels.astype(np.float32), epochs=10, batch_size=64)
+
 
     # Create a folder for the model if it does not already exist.
     os.makedirs(model_folder, exist_ok=True)
 
     # Save the model.
-    save_model(model_folder, model)
+    save_tf_model(model_folder, model)
 
     if verbose:
         print('Done.')
@@ -82,7 +92,7 @@ def train_model(data_folder, model_folder, verbose):
 
 # Load your trained models. This function is *required*. You should edit this function to add your code, but do *not* change the
 # arguments of this function. If you do not train one of the models, then you can return None for the model.
-def load_model(model_folder, verbose):
+def old_load_model(model_folder, verbose):
     model_filename = os.path.join(model_folder, 'model.sav')
     model = joblib.load(model_filename)
     return model
@@ -91,17 +101,21 @@ def load_model(model_folder, verbose):
 # arguments of this function.
 def run_model(record, model, verbose):
     # Load the model.
-    model = model['model']
+    # model = model['model']
 
     # Extract the features.
     features = extract_features(record)
     features = features.reshape(1, -1)
 
     # Get the model outputs.
-    binary_output = model.predict(features)[0]
-    probability_output = model.predict_proba(features)[0][1]
+    # binary_output = model.predict(features)[0]
+    # probability_output = model.predict_proba(features)[0][1]
+    prob = model.predict(features)[0,0]
+    pred = bool(prob >= 0.5)
 
-    return binary_output, probability_output
+    return pred, float(prob)
+
+    # return binary_output, probability_output
 
 ################################################################################
 #
@@ -125,6 +139,7 @@ def extract_features(record):
 
     signal, fields = load_signals(record)
 
+
     # TO-DO: Update to compute per-lead features. Check lead order and update and use functions for reordering leads as needed.
 
     num_finite_samples = np.size(np.isfinite(signal))
@@ -142,7 +157,61 @@ def extract_features(record):
     return np.asarray(features, dtype=np.float32)
 
 # Save your trained model.
-def save_model(model_folder, model):
+def old_save_model(model_folder, model):
     d = {'model': model}
     filename = os.path.join(model_folder, 'model.sav')
     joblib.dump(d, filename, protocol=0)
+
+
+###
+def save_model(model_folder, model):
+    # os.makedirs(model_folder, exist_ok=True)
+    model.save(os.path.join(model_folder, 'model.h5'))
+
+def load_model(model_folder, verbose):
+    model_path = os.path.join(model_folder, 'model.h5')
+    if verbose:
+        print(f"Loading Keras model from {model_path}")
+    return tf.keras.models.load_model(model_path)
+
+
+
+def init_cnn1d(input_shape):
+    model = tf.keras.Sequential([
+        # Layer 1
+        tf.keras.layers.Conv1D(filters=16, kernel_size=3, strides=1, padding='same', input_shape=input_shape),
+        tf.keras.layers.BatchNormalization(),
+        tf.keras.layers.Activation('relu'),
+        tf.keras.layers.MaxPooling1D(pool_size=2, strides=1, padding='valid'),
+        # Layer 2
+        tf.keras.layers.Conv1D(filters=32, kernel_size=3, strides=1, padding='same', activation='relu'),
+        tf.keras.layers.BatchNormalization(),
+        tf.keras.layers.Activation('relu'),
+        tf.keras.layers.MaxPooling1D(pool_size=2, strides=1, padding='valid'),
+        # Layer 3
+        tf.keras.layers.Conv1D(filters=64, kernel_size=3, strides=1, padding='same', activation='relu'),
+        tf.keras.layers.BatchNormalization(),
+        tf.keras.layers.Activation('relu'),
+
+        tf.keras.layers.Flatten(),
+        tf.keras.layers.Dense(128, activation='leaky_relu'),
+        tf.keras.layers.Dropout(0.5),
+        tf.keras.layers.Dense(64, activation='leaky_relu'),
+        tf.keras.layers.Dropout(0.5),
+        tf.keras.layers.Dense(1, activation='sigmoid')
+    ])
+
+    return model
+
+
+def init_MLP():
+    model = tf.keras.Sequential([
+        tf.keras.Input(shape=(6,)),
+        tf.keras.layers.Dense(64, activation='relu'),
+        tf.keras.layers.Dropout(0.5),
+        tf.keras.layers.Dense(32, activation='relu'),
+        tf.keras.layers.Dropout(0.5),
+        tf.keras.layers.Dense(1, activation='sigmoid')
+    ])
+
+    return model
