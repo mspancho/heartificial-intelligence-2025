@@ -9,7 +9,7 @@ import numpy as np
 import random
 import math
 from helper_code import *
-from preprocess import get_data, get_next_batch
+from preprocess import get_data
 
 
 

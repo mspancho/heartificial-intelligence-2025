@@ -16,11 +16,11 @@ def extract_CNN_features(record):
     return signal
 
 
-def get_data():
+def get_data(data_folder):
 
     print('Finding the Challenge data...')
 
-    data_folder = "/data/code15_output"
+    
 
     records = find_records(data_folder)
 
