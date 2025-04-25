@@ -35,12 +35,14 @@ def train(model, optimizer, train_inputs, train_labels):
 
    batch_size = 256
    num_batches = len(train_inputs)// batch_size
+   print(f"num batches: {num_batches}")
+   
    indices = tf.random.shuffle(tf.range(tf.shape(train_inputs)[0]))
    training_inputs = tf.gather(train_inputs, indices)
    training_labels = tf.gather(train_labels, indices)
    train_acc = 0.0
    loss_list = []
-   for batch_num in range(num_batches ):
+   for batch_num in range(num_batches):
       batch_inputs = training_inputs[batch_num * batch_size : (batch_num + 1) * batch_size]
       batch_labels = training_labels[batch_num * batch_size : (batch_num + 1) * batch_size]
 
@@ -60,7 +62,6 @@ def train(model, optimizer, train_inputs, train_labels):
       optimizer.apply_gradients(zip(grads,model.trainable_variables))
       batch_accuracy = float(model.accuracy(logits, batch_labels))
       train_acc += batch_accuracy
-
 
    return train_acc/num_batches, loss_list
 
@@ -155,16 +156,18 @@ def visualize_results(image_inputs, logits, image_labels, first_label, second_la
 
 def main():
 
-   LOCAL_TRAIN_FILE = 'data/train'
-   LOCAL_TEST_FILE = 'data/test'
+   LOCAL_TRAIN_FOLDER = 'code15_output/exams_part0/'
+   LOCAL_TEST_FOLDER = 'code15_output/exams_part1/'
+   
 
 
+   # labels are separate 
    # TODO: assignment.main() pt 1
    # Load your testing and training data using the get_data function
-   train_inputs, train_labels = get_data(LOCAL_TRAIN_FILE, [3, 5])
+   train_inputs, train_labels = get_data(LOCAL_TRAIN_FOLDER)
 
 
-   test_inputs, test_labels = get_data(LOCAL_TEST_FILE, [3, 5])
+   test_inputs, test_labels = get_data(LOCAL_TEST_FOLDER)
    print("Shape of inputs:", test_inputs.shape)
    print("Shape of one-hot labels:", test_labels.shape)
 

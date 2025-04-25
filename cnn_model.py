@@ -14,6 +14,8 @@ import math
 
 class CNN(tf.keras.Model):
     def __init__(self, classes):
+        super(CNN, self).__init__()
+
 
         # Initialize all hyperparameters
         self.loss_list = []
@@ -42,7 +44,7 @@ class CNN(tf.keras.Model):
         self.fc1 = tf.keras.layers.Dense(128, activation='relu')
         self.dropout2 = tf.keras.layers.Dropout(0.4)
         self.fc2 = tf.keras.layers.Dense(256, activation='relu')
-        self.output_layer = tf.keras.layers.Dense(1, activation='sigmoid')
+        self.output_layer = tf.keras.layers.Dense(2, activation='softmax')
 
     
 
@@ -65,13 +67,18 @@ class CNN(tf.keras.Model):
         x = self.fc1(x)
         x = self.dropout2(x, training=is_training)
         x = self.fc2(x)
+
+
+        # print(f"shape of output {self.output_layer(x).shape}")
+
         return self.output_layer(x)
 
     
 
     def loss(self, logits, labels):
         #use cross entropy to calculate loss
-        cce = tf.keras.losses.CategoricalCrossentropy()
+        cce = tf.keras.losses.BinaryCrossentropy()
+        # print(labels)
         return cce(labels, logits)
 	
     def accuracy(self, logits, labels):
