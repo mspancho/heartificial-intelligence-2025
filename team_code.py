@@ -35,7 +35,6 @@ def train_model(data_folder, model_folder, verbose):
 
     records = find_records(data_folder)
 
-    
     num_records = len(records)
 
     if num_records == 0:
