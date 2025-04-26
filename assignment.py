@@ -50,7 +50,7 @@ def train(model, optimizer, train_inputs, train_labels):
 
       with tf.GradientTape() as g:
          logits = model.call(batch_inputs)
-         loss = model.loss(logits, batch_labels)
+         loss = model.loss_fn(logits, batch_labels)
          loss_list.append(loss)
 
 
