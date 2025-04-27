@@ -35,10 +35,9 @@ def get_data(data_folder):
     # records = find_records(data_folder)
     # num_records = len(records)
 
+    
     sample_df = random_sample("something")
-    sample_exam_ids = set(sample_df['exam_id']).astype(str)
-
-
+    sample_exam_ids = set(sample_df['exam_id'].astype(str))
 
     print('Extracting features and labels from the data...')
 
@@ -47,19 +46,19 @@ def get_data(data_folder):
 
     for file in os.listdir(data_folder): #each file is a folder, e.g. exams_part0
         exam_folder = os.path.join(data_folder, file)
+        print(f"exam folder: {exam_folder}")
 
         # look into each file and add any of its records in set into feature and label list
         # open and check 
         records = find_records(exam_folder)
         num_records = len(records)
 
-        for i in num_records:
-
+        for i in range(num_records):
             record = os.path.join(exam_folder, records[i])
-            label = load_label(record)
-            str_label = str(label)
-
-            if str_label not in sample_exam_ids:
+            
+            str_record = str(records[i])
+            
+            if  str_record not in sample_exam_ids:
                 continue
             
             features = extract_CNN_features(record)
@@ -67,14 +66,15 @@ def get_data(data_folder):
             if features.shape != (12, 2000):
                 print(f"skipping {records[i]} due to shape {features.shape}")
                 continue
-            
+
+            label = load_label(record)
             feature_list.append(features.numpy())  # convert to numpy for stacking
             label_list.append(label)
 
-        feature_array = (np.stack(feature_list))  # shape (num_records, 4096, 12)
-        one_hot_labels = tf.one_hot(label_list, depth=2, dtype=tf.float32)
+    feature_array = (np.stack(feature_list))  # shape (num_records, 4096, 12)
+    one_hot_labels = tf.one_hot(label_list, depth=2, dtype=tf.float32)
 
-        return feature_array, one_hot_labels
+    return feature_array, one_hot_labels
 
 
 def random_sample(input_file):

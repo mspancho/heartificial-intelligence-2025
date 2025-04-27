@@ -2,7 +2,6 @@ from __future__ import absolute_import
 from matplotlib import pyplot as plt
 from cnn_model import CNN
 
-
 import os
 import tensorflow as tf
 import numpy as np
@@ -28,7 +27,7 @@ def train(model, optimizer, train_inputs, train_labels):
    :return: None
    '''
 
-   batch_size = 256
+   batch_size = 64
    num_batches = len(train_inputs)// batch_size
    print(f"num batches: {num_batches}")
    
@@ -44,7 +43,7 @@ def train(model, optimizer, train_inputs, train_labels):
       batch_inputs = tf.image.random_flip_left_right(batch_inputs)
 
       with tf.GradientTape() as g:
-         logits = model.call(batch_inputs)
+         logits = model.call(batch_inputs, is_training=True)
          loss = model.loss_fn(logits, batch_labels)
          loss_list.append(loss)
 
@@ -71,7 +70,7 @@ def test(model, test_inputs, test_labels):
    all batches
    """
 
-   batch_size = 120
+   batch_size = 64
    num_batches = len(test_inputs)//batch_size
    total_acc = 0.0
 
@@ -79,11 +78,10 @@ def test(model, test_inputs, test_labels):
       batch_inputs = test_inputs[batch_num * batch_size : (batch_num + 1) * batch_size]
       batch_labels = test_labels[batch_num * batch_size : (batch_num + 1) * batch_size]
     
-      logits = model.call(batch_inputs, is_testing=True)
+      logits = model.call(batch_inputs)
       acc = model.accuracy(logits, batch_labels)
       total_acc += acc
-   #test_acc = model.accuracy(logits, test_labels)
-   #print(f"Accuracy on testing set : {test_acc}")
+
 
 
    return float(total_acc/num_batches)
@@ -102,9 +100,6 @@ def visualize_loss(losses):
    plt.xlabel('Batch')
    plt.ylabel('Loss')
    plt.show()
-
-
-
 
 def visualize_results(image_inputs, logits, image_labels, first_label, second_label):
   
@@ -126,10 +121,8 @@ def visualize_results(image_inputs, logits, image_labels, first_label, second_la
            plt.setp(ax.get_yticklabels(), visible=False)
            ax.tick_params(axis='both', which='both', length=0)
 
-
    predicted_labels = np.argmax(logits, axis=1)
    num_images = image_inputs.shape[0]
-
 
    # Separate correct and incorrect images
    correct = []
@@ -148,8 +141,8 @@ def visualize_results(image_inputs, logits, image_labels, first_label, second_la
 
 def main():
 
-   LOCAL_TRAIN_FOLDER = 'code15_output/exams_part3/'
-   LOCAL_TEST_FOLDER = 'code15_output/exams_part1/'
+   LOCAL_TRAIN_FOLDER = 'train_data/'
+   LOCAL_TEST_FOLDER = 'test_data/'
    
 
 
@@ -163,16 +156,13 @@ def main():
    print("Shape of inputs:", test_inputs.shape)
    print("Shape of one-hot labels:", test_labels.shape)
 
-
-
-   model = CNN([3,5])
+   model = CNN(2)
 
    #could be nice for results to do multiple training rates
    optimizer = tf.keras.optimizers.Adam(learning_rate=1e-3)
 
-
    print('about to start training')
-   epochs = 4
+   epochs = 10
    loss_list = []
    for epoch in range(epochs):
       acc, epoch_loss = train(model,optimizer=optimizer, train_inputs=train_inputs, train_labels=train_labels)
