@@ -18,6 +18,13 @@ def extract_CNN_features(record):
 
     signal = signal[0:2000]
 
+    signal_mean = signal.mean()
+    signal_std = signal.std()
+
+    signal = (signal - signal_mean) / signal_std
+
+    # print(signal)
+
     signal_t = tf.transpose(signal)
     return signal_t
 
