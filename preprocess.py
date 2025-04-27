@@ -32,37 +32,49 @@ def extract_CNN_features(record):
 def get_data(data_folder):
 
     print('Finding the Challenge data...')
-    records = find_records(data_folder)
-    num_records = len(records)
+    # records = find_records(data_folder)
+    # num_records = len(records)
 
-    sample_list = random_sample("something")
+    sample_df = random_sample("something")
+    sample_exam_ids = set(sample_df['exam_id']).astype(str)
 
-    if num_records == 0:
-        raise FileNotFoundError('No data were provided.')
+
 
     print('Extracting features and labels from the data...')
 
     feature_list = []
     label_list = []
 
-    for i in range(num_records):
+    for file in os.listdir(data_folder): #each file is a folder, e.g. exams_part0
+        exam_folder = os.path.join(data_folder, file)
 
-        record = os.path.join(data_folder, records[i])
-        features = extract_CNN_features(record)  # (12, 4096)
-        if features.shape != (12, 2000):
-            print(f"skipping {records[i]} due to shape {features.shape}")
-            continue
+        # look into each file and add any of its records in set into feature and label list
+        # open and check 
+        records = find_records(exam_folder)
+        num_records = len(records)
 
-        if()
-        feature_list.append(features.numpy())  # convert to numpy for stacking
-        label = load_label(record)
-        print(label)
-        label_list.append(label)
+        for i in num_records:
 
-    feature_array = np.stack(feature_list)  # shape (num_records, 4096, 12)
-    one_hot_labels = tf.one_hot(label_list, depth=2, dtype=tf.float32)
+            record = os.path.join(exam_folder, records[i])
+            label = load_label(record)
+            str_label = str(label)
 
-    return feature_array, one_hot_labels
+            if str_label not in sample_exam_ids:
+                continue
+            
+            features = extract_CNN_features(record)
+
+            if features.shape != (12, 2000):
+                print(f"skipping {records[i]} due to shape {features.shape}")
+                continue
+            
+            feature_list.append(features.numpy())  # convert to numpy for stacking
+            label_list.append(label)
+
+        feature_array = (np.stack(feature_list))  # shape (num_records, 4096, 12)
+        one_hot_labels = tf.one_hot(label_list, depth=2, dtype=tf.float32)
+
+        return feature_array, one_hot_labels
 
 
 def random_sample(input_file):
@@ -88,3 +100,5 @@ def random_sample(input_file):
     print(f"Filtered dataset saved to {OUTPUT_FILE} with {len(combined_df)} samples.")
 
     return combined_df
+
+
