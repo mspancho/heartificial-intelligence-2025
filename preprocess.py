@@ -44,8 +44,6 @@ def get_data(data_folder):
     label_list = []
 
     for i in range(num_records):
-        #width = len(str(num_records))
-        #print(f'- {i+1:>{width}}/{num_records}: {records[i]}...')
 
         record = os.path.join(data_folder, records[i])
         features = extract_CNN_features(record)  # (12, 4096)
