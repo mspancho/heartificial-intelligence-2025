@@ -4,6 +4,8 @@ import tensorflow as tf
 import os
 from helper_code import *
 import pandas as pd
+import matplotlib.pyplot as plt
+
 
 def extract_CNN_features(record):
     
@@ -16,7 +18,7 @@ def extract_CNN_features(record):
     # print(f"signal type {type(signal)}")
     # print(signal)
 
-    signal = signal[0:2000]
+    signal = signal[0:2000, :]
 
     signal_mean = signal.mean()
     signal_std = signal.std()
@@ -25,7 +27,7 @@ def extract_CNN_features(record):
 
     # print(signal)
 
-    signal_t = tf.transpose(signal)
+    signal_t = tf.convert_to_tensor(signal,dtype=tf.float32)
     return signal_t
 
 
@@ -63,7 +65,7 @@ def get_data(data_folder):
             
             features = extract_CNN_features(record)
 
-            if features.shape != (12, 2000):
+            if features.shape != (2000,12):
                 print(f"skipping {records[i]} due to shape {features.shape}")
                 continue
 
@@ -100,5 +102,77 @@ def random_sample(input_file):
     print(f"Filtered dataset saved to {OUTPUT_FILE} with {len(combined_df)} samples.")
 
     return combined_df
+
+
+def plot_ecg(signal, chagas_positive=True, sampling_rate=500):
+    """
+    Plot the 12-lead ECG signal.
+    signal: numpy array of shape (12, 2000)
+    sampling_rate: samples per second, default 500 Hz
+    """
+    leads = [
+        "I", "II", "III", "aVR", "aVL", "aVF",
+        "V1", "V2", "V3", "V4", "V5", "V6"
+    ]
+
+    num_samples = signal.shape[1]
+    time_ms = np.arange(num_samples) * (1000 / sampling_rate)  # convert samples to milliseconds
+
+    plt.figure(figsize=(10, 8))  # smaller figure size
+
+    for i in range(12):
+        plt.subplot(12, 1, i + 1)
+        plt.plot(time_ms, signal[i], linewidth=0.8)
+        plt.ylabel(leads[i], fontsize=6)
+        if i != 11:
+            plt.xticks([])
+        else:
+            plt.xlabel('Time (ms)', fontsize=8)
+            plt.xticks(fontsize=6)
+
+        plt.yticks([])
+
+    # Title at the top
+    if chagas_positive:
+        title = "ECG Plot - Chagas Positive Case"
+    else:
+        title = "ECG Plot - Chagas Negative Case"
+
+
+    plt.suptitle(title, fontsize=10)
+    plt.tight_layout(rect=[0, 0, 1, 0.96])  # Adjust to fit title
+    plt.show()
+
+
+def get_true(data_folder):
+
+    # records = find_records(data_folder)
+    # num_records = len(records)
+
+    
+    sample_df = random_sample("something")
+    sample_exam_ids = set(sample_df['exam_id'].astype(str))
+
+    print('Extracting features and labels from the data...')
+
+    for file in os.listdir(data_folder): #each file is a folder, e.g. exams_part0
+        exam_folder = os.path.join(data_folder, file)
+        print(f"exam folder: {exam_folder}")
+
+        # look into each file and add any of its records in set into feature and label list
+        # open and check 
+        records = find_records(exam_folder)
+        num_records = len(records)
+
+        for i in range(num_records):
+            record = os.path.join(exam_folder, records[i])
+
+            label = load_label(record)            
+            if  label == 1:
+                signal, fields = load_signals(record)
+                return signal
+        
+    print("failed")
+    return -1            
 
 

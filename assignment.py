@@ -27,7 +27,7 @@ def train(model, optimizer, train_inputs, train_labels):
    :return: None
    '''
 
-   batch_size = 64
+   batch_size = 256
    num_batches = len(train_inputs)// batch_size
    print(f"num batches: {num_batches}")
    
@@ -40,7 +40,6 @@ def train(model, optimizer, train_inputs, train_labels):
       batch_inputs = training_inputs[batch_num * batch_size : (batch_num + 1) * batch_size]
       batch_labels = training_labels[batch_num * batch_size : (batch_num + 1) * batch_size]
 
-      batch_inputs = tf.image.random_flip_left_right(batch_inputs)
 
       with tf.GradientTape() as g:
          logits = model.call(batch_inputs, is_training=True)
@@ -162,7 +161,7 @@ def main():
    optimizer = tf.keras.optimizers.Adam(learning_rate=1e-3)
 
    print('about to start training')
-   epochs = 10
+   epochs = 5
    loss_list = []
    for epoch in range(epochs):
       acc, epoch_loss = train(model,optimizer=optimizer, train_inputs=train_inputs, train_labels=train_labels)
