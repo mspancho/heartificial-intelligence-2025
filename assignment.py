@@ -14,7 +14,7 @@ from preprocess import get_data
 # ensures that we run only on cpu
 
 def train(model, optimizer, train_inputs, train_labels):
-   
+
    '''
    Trains the model on all of the inputs and labels for one epoch. You should shuffle your inputs
    and labels - ensure that they are shuffled in the same order using tf.gather.
@@ -148,7 +148,7 @@ def visualize_results(image_inputs, logits, image_labels, first_label, second_la
 
 def main():
 
-   LOCAL_TRAIN_FOLDER = 'code15_output/exams_part0/'
+   LOCAL_TRAIN_FOLDER = 'code15_output/exams_part3/'
    LOCAL_TEST_FOLDER = 'code15_output/exams_part1/'
    
 
