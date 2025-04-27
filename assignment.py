@@ -11,14 +11,10 @@ import math
 from helper_code import *
 from preprocess import get_data
 
-
-
 # ensures that we run only on cpu
-os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
-
-
 
 def train(model, optimizer, train_inputs, train_labels):
+   
    '''
    Trains the model on all of the inputs and labels for one epoch. You should shuffle your inputs
    and labels - ensure that they are shuffled in the same order using tf.gather.
@@ -31,7 +27,6 @@ def train(model, optimizer, train_inputs, train_labels):
    shape (num_labels, num_classes)
    :return: None
    '''
-
 
    batch_size = 256
    num_batches = len(train_inputs)// batch_size
@@ -53,8 +48,6 @@ def train(model, optimizer, train_inputs, train_labels):
          loss = model.loss(logits, batch_labels)
          loss_list.append(loss)
 
-
-
          #if batch_num % 50 ==0:
             #print( f"Batch {batch_num}, accuracy : batch accuracy {batch_accuracy}")
       
@@ -64,7 +57,6 @@ def train(model, optimizer, train_inputs, train_labels):
       train_acc += batch_accuracy
 
    return train_acc/num_batches, loss_list
-
 
 
 def test(model, test_inputs, test_labels):
