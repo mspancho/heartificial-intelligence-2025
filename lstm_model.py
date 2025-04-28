@@ -32,8 +32,17 @@ class LSTMsolo(tf.keras.Model):
     
     def loss_fn(self, logits, labels):
         #use cross entropy to calculate loss
-        cce = tf.keras.losses.BinaryCrossentropy()
+        cce = tf.keras.losses.CategoricalCrossentropy()
         return cce(labels, logits)
+
+
+    def accuracy(self, logits, labels):
+        max_logits = tf.argmax(logits,axis=1)
+        max_labels = tf.argmax(labels, axis=1)
+
+        comp_pred_true = tf.equal(max_logits, max_labels)
+        accuracy = tf.reduce_mean(tf.cast(comp_pred_true, dtype=tf.float32))
+        return accuracy
 
     
 

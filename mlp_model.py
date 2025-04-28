@@ -47,7 +47,7 @@ class MLP(tf.keras.Model):
 
     def loss_fn(self, logits, labels):
         #use cross entropy to calculate loss
-        cce = tf.keras.losses.BinaryCrossentropy()
+        cce = tf.keras.losses.CategoricalCrossentropy()
         # print(labels)
         return cce(labels, logits)
 	
