@@ -64,7 +64,7 @@ class CNN(tf.keras.Model):
 
     def loss_fn(self, logits, labels):
         #use cross entropy to calculate loss
-        cce = tf.keras.losses.CategoricalCrossentropy()
+        cce = tf.keras.losses.BinaryCrossentropy()
         # print(labels)
         return cce(labels, logits)
 	

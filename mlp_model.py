@@ -12,7 +12,7 @@ os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 
 
 class MLP(tf.keras.Model):
-    def __init__(self):
+    def __init__(self, classes):
         """
         This model class will contain the architecture for your CNN that
         classifies images. Do not modify the constructor, as doing so
@@ -27,14 +27,14 @@ class MLP(tf.keras.Model):
         self.input_width = 32
         self.input_height = 32
         self.image_channels = 3
-        self.num_classes = 2
+        self.num_classes = classes
         self.hidden_layer_size = 128
         
         self.layer1 = tf.keras.layers.Dense(256, kernel_initializer	="glorot_uniform", activation='leaky_relu')
         self.layer2 = tf.keras.layers.Dense(128, kernel_initializer	="glorot_uniform", activation='leaky_relu')
         self.layer3 = tf.keras.layers.Dense(self.num_classes, kernel_initializer="glorot_uniform", activation='softmax')
 
-    def call(self, inputs, is_testing=False):
+    def call(self, inputs, is_training=False):
         
         flat_inputs = tf.keras.layers.Flatten()(inputs)
         

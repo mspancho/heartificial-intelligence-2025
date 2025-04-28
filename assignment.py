@@ -1,6 +1,7 @@
 from __future__ import absolute_import
 from matplotlib import pyplot as plt
 from cnn_model import CNN
+from lstm_model import LSTMsolo#, LSTMLP
 
 import os
 import tensorflow as tf

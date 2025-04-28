@@ -30,8 +30,17 @@ def extract_CNN_features(record):
     signal_t = tf.convert_to_tensor(signal,dtype=tf.float32)
     return signal_t
 
+def extract_static_features(record):
 
-def get_data(data_folder):
+    header = load_header(record)
+    age = get_age(header)
+    sex = get_sex(header)
+    sex = 1 if sex == 'Male' else 0
+
+    return (age, sex)
+
+
+def get_data(data_folder, hybrid=False):
 
     print('Finding the Challenge data...')
     # records = find_records(data_folder)
@@ -43,7 +52,9 @@ def get_data(data_folder):
 
     print('Extracting features and labels from the data...')
 
-    feature_list = []
+
+    wave_feature_list = []
+    static_feature_list = []
     label_list = []
 
     for file in os.listdir(data_folder): #each file is a folder, e.g. exams_part0
@@ -70,14 +81,22 @@ def get_data(data_folder):
                 continue
 
             label = load_label(record)
-            feature_list.append(features.numpy())  # convert to numpy for stacking
+            wave_feature_list.append(features.numpy())  # convert to numpy for stacking
+
             label_list.append(label)
 
-    feature_array = (np.stack(feature_list))  # shape (num_records, 4096, 12)
+            if hybrid:
+                age, sex = extract_static_features(record)
+                static_feature_list.append([age, sex])
+
+    wave_feature_array = (np.stack(wave_feature_list))  # shape (num_records, 4096, 12)
     one_hot_labels = tf.one_hot(label_list, depth=2, dtype=tf.float32)
-
-    return feature_array, one_hot_labels
-
+    if hybrid:
+        static_array = np.array(static_feature_list, dtype=np.float32)
+        return wave_feature_array, static_array, one_hot_labels
+    else:
+        return wave_feature_array, one_hot_labels
+    
 
 def random_sample(input_file):
     INPUT_FILE = 'code15_input/code15_chagas_labels.csv'   # Replace with your actual input file
