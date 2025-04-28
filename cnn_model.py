@@ -16,17 +16,15 @@ class CNN(tf.keras.Model):
 
         # Input shape: (time_steps, channels)
 
-        self.conv1 = tf.keras.layers.Conv1D(24, kernel_size=7, strides=1, padding='same', activation='relu')
-        self.conv2 = tf.keras.layers.Conv1D(24, kernel_size=7, strides=1, padding='same', activation='relu')
+        self.conv1 = tf.keras.layers.Conv1D(16, kernel_size=7, strides=1, padding='same', activation='relu')
         self.bn1 = tf.keras.layers.BatchNormalization()
         self.pool1 = tf.keras.layers.MaxPooling1D(pool_size=2)
 
-        self.conv3 = tf.keras.layers.Conv1D(48, kernel_size=7, strides=1, padding='same', activation='relu')
-        self.conv4 = tf.keras.layers.Conv1D(48, kernel_size=7, strides=1, padding='same', activation='relu')
+        self.conv2 = tf.keras.layers.Conv1D(32, kernel_size=5, strides=1, padding='same', activation='relu')
         self.bn2 = tf.keras.layers.BatchNormalization()
         self.pool2 = tf.keras.layers.MaxPooling1D(pool_size=2)
 
-        self.conv5 = tf.keras.layers.Conv1D(48, kernel_size=7, strides=1, padding='same', activation='relu')
+        self.conv3 = tf.keras.layers.Conv1D(128, kernel_size=3, strides=1, padding='same', activation='relu')
         #self.bn3 = tf.keras.layers.BatchNormalization()
         #self.pool3 = tf.keras.layers.MaxPooling1D(pool_size=2)
 
@@ -48,10 +46,10 @@ class CNN(tf.keras.Model):
         x = self.pool1(x)
 
         x = self.conv3(x)
-        x = self.conv4(x)
-        x = self.conv5(x)
-        x = self.bn2(x, training=is_training)
-        x = self.pool2(x)
+        #x = self.conv4(x)
+        #x = self.conv5(x)
+        #x = self.bn2(x, training=is_training)
+        #x = self.pool2(x)
 
         #x = self.conv3(x)
         #x = self.bn3(x, training=is_training)
@@ -60,18 +58,17 @@ class CNN(tf.keras.Model):
         x = self.flatten(x)
         x = self.dropout1(x, training=is_training)
         x = self.fc1(x)
-        x = self.dropout2(x, training=is_training)
-        x = self.fc2(x)
-        x = self.dropout3(x, training=is_training)
-        x = self.fc3(x)
-        
+        #x = self.dropout2(x, training=is_training)
+        #x = self.fc2(x)
+
+
         # print(f"shape of output {self.output_layer(x).shape}")
 
         return self.output_layer(x)
 
     def loss_fn(self, logits, labels):
         #use cross entropy to calculate loss
-        cce = tf.keras.losses.BinaryCrossentropy()
+        cce = tf.keras.losses.CategoricalCrossentropy()
         # print(labels)
         return cce(labels, logits)
 	
