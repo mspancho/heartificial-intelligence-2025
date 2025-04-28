@@ -1,6 +1,7 @@
 from __future__ import absolute_import
 from matplotlib import pyplot as plt
 from cnn_model import CNN
+from lstm_model import LSTMsolo, GRUsolo#, LSTMLP
 
 import os
 import tensorflow as tf
@@ -91,23 +92,26 @@ def main():
    print("Shape of one-hot labels:", test_labels.shape)
 
    model = CNN(2)
+   gru = GRUsolo(input_size=12, hidden_size=128, num_layers=1, num_classes=2, dropout=0.5, recurrent_dropout=0.125)
+   seq_models = [model, gru]
    optimizer = tf.keras.optimizers.Adam(learning_rate=1e-3)
 
    print('about to start training')
    epochs = 5
-   all_losses = []
-   all_accuracies = []
+   for model in seq_models:
+      all_losses = []
+      all_accuracies = []
 
-   for epoch in range(epochs):
-      acc, epoch_losses, epoch_accuracies = train(model, optimizer, train_inputs, train_labels)
-      print(f"epoch {epoch}: {acc}")
-      all_losses.extend(epoch_losses)
-      all_accuracies.extend(epoch_accuracies)
+      for epoch in range(epochs):
+         acc, epoch_losses, epoch_accuracies = train(model, optimizer, train_inputs, train_labels)
+         print(f"epoch {epoch}: {acc}")
+         all_losses.extend(epoch_losses)
+         all_accuracies.extend(epoch_accuracies)
 
-   visualize_loss(all_losses, all_accuracies)
-   print('done training')
+      visualize_loss(all_losses, all_accuracies)
+      print('done training')
 
-   print(f"test acc: {test(model, test_inputs=test_inputs, test_labels=test_labels)}")
+      print(f"test acc: {test(model, test_inputs=test_inputs, test_labels=test_labels)}")
 
    return
 
