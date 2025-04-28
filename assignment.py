@@ -1,6 +1,7 @@
 from __future__ import absolute_import
 from matplotlib import pyplot as plt
 from cnn_model import CNN
+from lstm_model import LSTMsolo#, LSTMLP
 
 import os
 import tensorflow as tf
@@ -150,30 +151,51 @@ def main():
    # TODO: assignment.main() pt 1
    # Load your testing and training data using the get_data function
    train_inputs, train_labels = get_data(LOCAL_TRAIN_FOLDER)
-
+   # train_ekg_inputs, train_static_inputs, train_hybrid_labels = get_data(LOCAL_TRAIN_FOLDER, hybrid=True)
 
    test_inputs, test_labels = get_data(LOCAL_TEST_FOLDER)
+   # test_hybrid_inputs, test_hybrid_labels = get_data(LOCAL_TEST_FOLDER, hybrid=True)
    print("Shape of inputs:", test_inputs.shape)
    print("Shape of one-hot labels:", test_labels.shape)
 
-   model = CNN(2)
+   models = [CNN(2), LSTMsolo(2, 128, 1, 2)]
+   # hybrid_model = LSTMLP(2, 128, 1, 2)
 
-   #could be nice for results to do multiple training rates
+   # could be nice for results to do multiple training rates
    optimizer = tf.keras.optimizers.Adam(learning_rate=1e-3)
 
    print('about to start training')
    epochs = 10
    loss_list = []
-   for epoch in range(epochs):
-      acc, epoch_loss = train(model,optimizer=optimizer, train_inputs=train_inputs, train_labels=train_labels)
-      print(f"epoch {epoch}: {acc}")
-      loss_list.append(epoch_loss)
+   for model in models:
+      for epoch in range(epochs):
+         acc, epoch_loss = train(model,optimizer=optimizer, train_inputs=train_inputs, train_labels=train_labels)
+         print(f"epoch {epoch}: {acc}")
+         loss_list.append(epoch_loss)
 
-   flat_loss_list = [loss for epoch_loss in loss_list for loss in epoch_loss]
-   visualize_loss(flat_loss_list)
-   print('done training')
+      flat_loss_list = [loss for epoch_loss in loss_list for loss in epoch_loss]
+      visualize_loss(flat_loss_list)
+      print('done training')
 
-   print(f"test acc: {test(model, test_inputs=test_inputs, test_labels=test_labels)}")
+      print(f"test acc: {test(model, test_inputs=test_inputs, test_labels=test_labels)}")
+
+
+   # print("Shape of ekg inputs:", test_ekg_inputs.shape)
+   # print("Shape of static inputs:", train_static_inputs.shape)
+   # print("Shape of one-hot labels:", test_labels.shape)
+
+   # print('about to start hybrid training')
+   # for epoch in range(epochs):
+   #    acc, epoch_loss = train(hybrid_model,optimizer=optimizer, train_inputs=train_hybrid_inputs, train_labels=train_labels)
+   #    print(f"epoch {epoch}: {acc}")
+   #    loss_list.append(epoch_loss)
+
+   # flat_loss_list = [loss for epoch_loss in loss_list for loss in epoch_loss]
+   # visualize_loss(flat_loss_list)
+   # print('done training')
+
+   # print(f"test acc: {test(model, test_inputs=test_inputs, test_labels=test_labels)}")
+
 
    return
 
