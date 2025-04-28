@@ -10,7 +10,6 @@ import math
 from helper_code import *
 from preprocess import get_data
 
-
 def train(model, optimizer, train_inputs, train_labels):
     batch_size = 256
     num_batches = len(train_inputs) // batch_size
@@ -44,22 +43,64 @@ def train(model, optimizer, train_inputs, train_labels):
 
 
 def test(model, test_inputs, test_labels):
+    batch_size = 64
+    num_batches = len(test_inputs) // batch_size
+    total_acc = 0.0
 
-   batch_size = 64
-   num_batches = len(test_inputs)//batch_size
-   total_acc = 0.0
+    all_preds = []
+    all_true = []
 
-   for batch_num in range(num_batches):
-      batch_inputs = test_inputs[batch_num * batch_size : (batch_num + 1) * batch_size]
-      batch_labels = test_labels[batch_num * batch_size : (batch_num + 1) * batch_size]
+    for batch_num in range(num_batches):
+        batch_inputs = test_inputs[batch_num * batch_size : (batch_num + 1) * batch_size]
+        batch_labels = test_labels[batch_num * batch_size : (batch_num + 1) * batch_size]
     
-      logits = model.call(batch_inputs)
-      acc = model.accuracy(logits, batch_labels)
-      total_acc += acc
+        logits = model.call(batch_inputs)
+        acc = model.accuracy(logits, batch_labels)
+        total_acc += acc
 
+        preds = tf.argmax(logits, axis=1)
+        true = tf.argmax(batch_labels, axis=1)
+        
+        all_preds.extend(preds.numpy())
+        all_true.extend(true.numpy())
 
+    TP = FP = FN = TN = 0
 
-   return float(total_acc/num_batches)
+    for t, p in zip(all_true, all_preds):
+        if t == 1 and p == 1:
+            TP += 1
+        elif t == 0 and p == 1:
+            FP += 1
+        elif t == 1 and p == 0:
+            FN += 1
+        elif t == 0 and p == 0:
+            TN += 1
+
+    print("\nConfusion Matrix:")
+    print(f"TP: {TP}, FP: {FP}, FN: {FN}, TN: {TN}\n")
+
+    matrix = np.array([[TN, FP],
+                       [FN, TP]])
+
+    fig, ax = plt.subplots()
+    cax = ax.matshow(matrix, cmap='Blues')
+    plt.colorbar(cax)
+
+    ax.set_xticklabels([''] + ['0', '1'])
+    ax.set_yticklabels([''] + ['0', '1'])
+    plt.xlabel('Predicted')
+    plt.ylabel('True')
+    plt.title('Confusion Matrix')
+
+    # Annotate each cell with the number, adjusting text color for contrast
+    for (i, j), val in np.ndenumerate(matrix):
+        color = 'white' if matrix[i, j] > matrix.max() / 2 else 'black'
+        ax.text(j, i, f'{val}', ha='center', va='center', color=color, fontsize=14, fontweight='bold')
+
+    plt.show()
+
+    return float(total_acc/num_batches)
+
 
 def visualize_loss(losses,accuracies):
     x = [i for i in range(len(losses))]
@@ -113,4 +154,4 @@ def main():
 
 
 if __name__ == '__main__':
-   main()
+    main()
