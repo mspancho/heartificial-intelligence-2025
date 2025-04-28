@@ -104,43 +104,45 @@ def random_sample(input_file):
     return combined_df
 
 
-def plot_ecg(signal, chagas_positive=True, sampling_rate=500):
+def plot_ecg(signal, chagas_positive=True, sampling_rate=400):
     """
     Plot the 12-lead ECG signal.
-    signal: numpy array of shape (12, 2000)
-    sampling_rate: samples per second, default 500 Hz
+    signal: numpy array of shape (time, 12)
+    sampling_rate: samples per second, default 400 Hz
     """
     leads = [
         "I", "II", "III", "aVR", "aVL", "aVF",
         "V1", "V2", "V3", "V4", "V5", "V6"
     ]
 
-    num_samples = signal.shape[1]
-    time_ms = np.arange(num_samples) * (1000 / sampling_rate)  # convert samples to milliseconds
+    if signal.shape[0] < signal.shape[1]:
+        # (time, leads) expected; if wrong, transpose
+        signal = signal.T
 
-    plt.figure(figsize=(10, 8))  # smaller figure size
+    num_samples = signal.shape[0]
+    time_seconds = np.arange(num_samples) / sampling_rate  # time in seconds
+
+    plt.figure(figsize=(10, 8))
 
     for i in range(12):
         plt.subplot(12, 1, i + 1)
-        plt.plot(time_ms, signal[i], linewidth=0.8)
+        plt.plot(time_seconds, signal[:, i], linewidth=0.8)
         plt.ylabel(leads[i], fontsize=6)
         if i != 11:
             plt.xticks([])
         else:
-            plt.xlabel('Time (ms)', fontsize=8)
+            plt.xlabel('Time (s)', fontsize=8)
             plt.xticks(fontsize=6)
 
         plt.yticks([])
 
-    # Title at the top
     if chagas_positive:
         title = "ECG Plot - Chagas Positive Case"
     else:
         title = "ECG Plot - Chagas Negative Case"
 
-
     plt.suptitle(title, fontsize=10)
-    plt.tight_layout(rect=[0, 0, 1, 0.96])  # Adjust to fit title
+    plt.tight_layout(rect=[0, 0, 1, 0.96])
     plt.show()
 
 
@@ -175,4 +177,11 @@ def get_true(data_folder):
     print("failed")
     return -1            
 
+def main():
+    plot_ecg(get_true("train_data/"), chagas_positive=False)
 
+
+    
+
+if __name__ == "__main__":
+    main()

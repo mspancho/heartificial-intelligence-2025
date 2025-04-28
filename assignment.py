@@ -10,64 +10,40 @@ import math
 from helper_code import *
 from preprocess import get_data
 
-# ensures that we run only on cpu
 
 def train(model, optimizer, train_inputs, train_labels):
-
-   '''
-   Trains the model on all of the inputs and labels for one epoch. You should shuffle your inputs
-   and labels - ensure that they are shuffled in the same order using tf.gather.
-   To increase accuracy, you may want to use tf.image.random_flip_left_right on your
-   inputs before doing the forward pass. You should batch your inputs.
-   :param model: the initialized model to use for the forward pass and backward pass
-   :param train_inputs: train inputs (all inputs to use for training),
-   shape (num_inputs, width, height, num_channels)
-   :param train_labels: train labels (all labels to use for training),
-   shape (num_labels, num_classes)
-   :return: None
-   '''
-
-   batch_size = 256
-   num_batches = len(train_inputs)// batch_size
-   print(f"num batches: {num_batches}")
+    batch_size = 256
+    num_batches = len(train_inputs) // batch_size
+    print(f"num batches: {num_batches}")
    
-   indices = tf.random.shuffle(tf.range(tf.shape(train_inputs)[0]))
-   training_inputs = tf.gather(train_inputs, indices)
-   training_labels = tf.gather(train_labels, indices)
-   train_acc = 0.0
-   loss_list = []
-   for batch_num in range(num_batches):
-      batch_inputs = training_inputs[batch_num * batch_size : (batch_num + 1) * batch_size]
-      batch_labels = training_labels[batch_num * batch_size : (batch_num + 1) * batch_size]
+    indices = tf.random.shuffle(tf.range(tf.shape(train_inputs)[0]))
+    training_inputs = tf.gather(train_inputs, indices)
+    training_labels = tf.gather(train_labels, indices)
+   
+    train_acc = 0.0
+    loss_list = []
+    accuracy_list = []   
 
+    for batch_num in range(num_batches):
+        batch_inputs = training_inputs[batch_num * batch_size : (batch_num + 1) * batch_size]
+        batch_labels = training_labels[batch_num * batch_size : (batch_num + 1) * batch_size]
 
-      with tf.GradientTape() as g:
-         logits = model.call(batch_inputs, is_training=True)
-         loss = model.loss_fn(logits, batch_labels)
-         loss_list.append(loss)
+        with tf.GradientTape() as g:
+            logits = model.call(batch_inputs, is_training=True)
+            loss = model.loss_fn(logits, batch_labels)
+            loss_list.append(loss.numpy())  
 
-         #if batch_num % 50 ==0:
-            #print( f"Batch {batch_num}, accuracy : batch accuracy {batch_accuracy}")
-      
-      grads = g.gradient(loss, model.trainable_variables)
-      optimizer.apply_gradients(zip(grads,model.trainable_variables))
-      batch_accuracy = float(model.accuracy(logits, batch_labels))
-      train_acc += batch_accuracy
+        grads = g.gradient(loss, model.trainable_variables)
+        optimizer.apply_gradients(zip(grads, model.trainable_variables))
+        
+        batch_accuracy = float(model.accuracy(logits, batch_labels))
+        accuracy_list.append(batch_accuracy)  
+        train_acc += batch_accuracy
 
-   return train_acc/num_batches, loss_list
+    return train_acc / num_batches, loss_list, accuracy_list
 
 
 def test(model, test_inputs, test_labels):
-   """
-   Tests the model on the test inputs and labels. You should NOT randomly
-   flip images or do any extra preprocessing.
-   :param test_inputs: test data (all images to be tested),
-   shape (num_inputs, width, height, num_channels)
-   :param test_labels: test labels (all corresponding labels),
-   shape (num_labels, num_classes)
-   :return: test accuracy - this should be the average accuracy across
-   all batches
-   """
 
    batch_size = 64
    num_batches = len(test_inputs)//batch_size
@@ -85,96 +61,56 @@ def test(model, test_inputs, test_labels):
 
    return float(total_acc/num_batches)
 
-def visualize_loss(losses):
-   """
-   Uses Matplotlib to visualize the losses of our model.
-   :param losses: list of loss data stored from train. Can use the model's loss_list
-   field
-   NOTE: DO NOT EDIT
-   :return: doesn't return anything, a plot should pop-up
-   """
-   x = [i for i in range(len(losses))]
-   plt.plot(x, losses)
-   plt.title('Loss per batch')
-   plt.xlabel('Batch')
-   plt.ylabel('Loss')
-   plt.show()
+def visualize_loss(losses,accuracies):
+    x = [i for i in range(len(losses))]
+    fig, ax1 = plt.subplots()
 
-def visualize_results(image_inputs, logits, image_labels, first_label, second_label):
-  
-   def plotter(image_indices, label):
-       nc = 10
-       nr = math.ceil(len(image_indices) / 10)
-       fig = plt.figure()
-       fig.suptitle(
-           f"{label} Examples\nPL = Predicted Label\nAL = Actual Label")
-       for i in range(len(image_indices)):
-           ind = image_indices[i]
-           ax = fig.add_subplot(nr, nc, i+1)
-           ax.imshow(image_inputs[ind], cmap="Greys")
-           pl = first_label if predicted_labels[ind] == 0.0 else second_label
-           al = first_label if np.argmax(
-               image_labels[ind], axis=0) == 0 else second_label
-           ax.set(title=f"PL: {pl}\nAL: {al}")
-           plt.setp(ax.get_xticklabels(), visible=False)
-           plt.setp(ax.get_yticklabels(), visible=False)
-           ax.tick_params(axis='both', which='both', length=0)
+    color = 'tab:red'
+    ax1.set_xlabel('Batch')
+    ax1.set_ylabel('Loss', color=color)
+    ax1.plot(x, losses, color=color)
+    ax1.tick_params(axis='y', labelcolor=color)
 
-   predicted_labels = np.argmax(logits, axis=1)
-   num_images = image_inputs.shape[0]
+    ax2 = ax1.twinx() 
+    color = 'tab:blue'
+    ax2.set_ylabel('Accuracy', color=color)  
+    ax2.plot(x, accuracies, color=color)
+    ax2.tick_params(axis='y', labelcolor=color)
 
-   # Separate correct and incorrect images
-   correct = []
-   incorrect = []
-   for i in range(num_images):
-       if predicted_labels[i] == np.argmax(image_labels[i], axis=0):
-           correct.append(i)
-       else:
-           incorrect.append(i)
-
-
-   plotter(correct, 'Correct')
-   plotter(incorrect, 'Incorrect')
-   plt.show()
+    plt.title('Loss and Accuracy per Batch')
+    plt.show()
 
 
 def main():
-
-   LOCAL_TRAIN_FOLDER = 'train_data/'
-   LOCAL_TEST_FOLDER = 'test_data/'
+    LOCAL_TRAIN_FOLDER = 'train_data/'
+    LOCAL_TEST_FOLDER = 'test_data/'
    
+    train_inputs, train_labels = get_data(LOCAL_TRAIN_FOLDER)
+    test_inputs, test_labels = get_data(LOCAL_TEST_FOLDER)
+    print("Shape of inputs:", test_inputs.shape)
+    print("Shape of one-hot labels:", test_labels.shape)
 
+    model = CNN(2)
+    optimizer = tf.keras.optimizers.Adam(learning_rate=1e-3)
 
-   # labels are separate 
-   # TODO: assignment.main() pt 1
-   # Load your testing and training data using the get_data function
-   train_inputs, train_labels = get_data(LOCAL_TRAIN_FOLDER)
+    print('about to start training')
+    epochs = 5
+    all_losses = []
+    all_accuracies = []
 
+    for epoch in range(epochs):
+        acc, epoch_losses, epoch_accuracies = train(model, optimizer, train_inputs, train_labels)
+        print(f"epoch {epoch}: {acc}")
+        all_losses.extend(epoch_losses)
+        all_accuracies.extend(epoch_accuracies)
 
-   test_inputs, test_labels = get_data(LOCAL_TEST_FOLDER)
-   print("Shape of inputs:", test_inputs.shape)
-   print("Shape of one-hot labels:", test_labels.shape)
+    visualize_loss(all_losses, all_accuracies)
+    print('done training')
 
-   model = CNN(2)
+    print(f"test acc: {test(model, test_inputs=test_inputs, test_labels=test_labels)}")
 
-   #could be nice for results to do multiple training rates
-   optimizer = tf.keras.optimizers.Adam(learning_rate=1e-3)
+    return
 
-   print('about to start training')
-   epochs = 5
-   loss_list = []
-   for epoch in range(epochs):
-      acc, epoch_loss = train(model,optimizer=optimizer, train_inputs=train_inputs, train_labels=train_labels)
-      print(f"epoch {epoch}: {acc}")
-      loss_list.append(epoch_loss)
-
-   flat_loss_list = [loss for epoch_loss in loss_list for loss in epoch_loss]
-   visualize_loss(flat_loss_list)
-   print('done training')
-
-   print(f"test acc: {test(model, test_inputs=test_inputs, test_labels=test_labels)}")
-
-   return
 
 if __name__ == '__main__':
    main()

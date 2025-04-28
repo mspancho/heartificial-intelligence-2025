@@ -45,7 +45,6 @@ def plot_ecg(signal, record_name=None):
     plt.tight_layout()
     plt.show()
 
-
 def main():
 
     df1 = pd.read_csv('code15_input/code15_chagas_labels.csv')
