@@ -23,12 +23,18 @@ class LSTMsolo(tf.keras.Model):
         ]
         self.fc = tf.keras.layers.Dense(num_classes)
 
-    def call(self, x, training=False):
+    def call(self, x, is_training=False):
         # x: (batch, seq_len, input_size)
         for lstm in self.lstm_layers:
-            x = lstm(x, training=training)
+            x = lstm(x, training=is_training)
         out = self.fc(x)
         return out
+    
+    def loss_fn(self, logits, labels):
+        #use cross entropy to calculate loss
+        cce = tf.keras.losses.BinaryCrossentropy()
+        return cce(labels, logits)
+
     
 
 # class LSTMLP(tf.keras.Model):
