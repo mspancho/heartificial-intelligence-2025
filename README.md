@@ -1,5 +1,5 @@
 # Tensorflow implementation for George B. Moody PhysioNet Challenge 2025
-Chagas disease is a tropical parasitic illness caused by the protozoan Trypanosoma cruzi, primarily induced by triatomine bugs. It is endemic to Central and South America but can also be found in other parts of the world through migration. 
+Chagas disease is a parasitic illness caused by the protozoan Trypanosoma cruzi, primarily induced by triatomine bugs. It is endemic to Central and South America but can also be found in other parts of the world through migration. 
 The disease begins acutely with fever, fatigue, and swelling near the infection site.
 However, about 20–30% of infected individuals may develop chronic Chagas cardiomyopathies and require intensive care.
 Chagas disease has ben hypothesized to be detectable on a 12-lead ECG, and fast deep learning could enable more widespread preliminary testing, efficient treatment, and vector control.
