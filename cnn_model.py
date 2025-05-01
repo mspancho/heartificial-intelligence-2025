@@ -53,13 +53,13 @@ class CNN(tf.keras.Model):
         x = self.conv1(inputs)
         x = self.conv2(x)
         x = self.bn1(x)
-        x = self.pool1
+        x = self.pool1(x)
 
          
         x = self.conv3(x)
         x = self.conv4(x)
         x = self.bn2(x)
-        x = self.pool2
+        x = self.pool2(x)
 
        
         # x = self.conv1(inputs)
@@ -96,8 +96,8 @@ class CNN(tf.keras.Model):
 
         threshold = 0.3
         
-        max_logits = tf.cast(logits[:,1] > threshold, tf.int64)
-        # max_logits = tf.argmax(logits,axis=1)
+        # max_logits = tf.cast(logits[:,1] > threshold, tf.int64)
+        max_logits = tf.argmax(logits,axis=1)
         max_labels = tf.argmax(labels, axis=1)
 
         comp_pred_true = tf.equal(max_logits, max_labels)
