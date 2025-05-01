@@ -2,7 +2,7 @@
 Chagas disease is a parasitic illness caused by the protozoan Trypanosoma cruzi, primarily induced by triatomine bugs. It is endemic to Central and South America but can also be found in other parts of the world through migration. 
 The disease begins acutely with fever, fatigue, and swelling near the infection site.
 However, about 20–30% of infected individuals may develop chronic Chagas cardiomyopathies and require intensive care.
-Chagas disease has ben hypothesized to be detectable on a 12-lead ECG, and a fast deep learning model has the potential to promote more widespread preliminary testing, efficient treatment, and vector control.
+Chagas disease has ben hypothesized to be detectable on a 12-lead ECG, and a fast deep learning model has the potential to promote widespread preliminary testing, efficient treatment, and vector control.
 
 In response to the George B. Moody Physionet challenge for 2025, this is our attempt to create a diagnostic model that classifies Chagas disease from 12 lead ECG data using a convolutional neural network.
 
