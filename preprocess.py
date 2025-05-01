@@ -7,6 +7,15 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 
+"""
+This file holds our preprocessing functions, as well as some plotting functions 
+to generate ecg images for our poster. 
+"""
+
+"""
+This function extracts raw ecg data for a specific case into lists 
+for each lead does basic z score normalization, and converts to tensor
+"""
 def extract_CNN_features(record):
     
     signal, fields = load_signals(record)
@@ -14,10 +23,9 @@ def extract_CNN_features(record):
     #normalize 0 to 1?
     #truncate particularly large and small values?
     #truncate to same lenght
+    #all considerations were explored but didn't have explict effect on model performance
 
-    # print(f"signal type {type(signal)}")
-    # print(signal)
-
+    
     signal = signal[0:2000, :]
 
     signal_mean = signal.mean()
@@ -25,11 +33,13 @@ def extract_CNN_features(record):
 
     signal = (signal - signal_mean) / signal_std
 
-    # print(signal)
 
     signal_t = tf.convert_to_tensor(signal,dtype=tf.float32)
     return signal_t
 
+""""
+Gets/encodes metadata from a record (dataset only had age and sex)
+"""
 def extract_static_features(record):
 
     header = load_header(record)
@@ -39,7 +49,14 @@ def extract_static_features(record):
 
     return (age, sex)
 
-
+"""
+Cohesive function to get data from subfolders within our train/test folders
+See readme for details about the file structure.
+Above, we shortened the waveform data to 2000 time units,
+but we also still have data shorter than that so simply reject them
+Also attempte padding to compensate for short sequences 
+not reflected in current code
+"""
 def get_data(data_folder, hybrid=False):
 
     print('Finding the Challenge data...')
@@ -57,12 +74,10 @@ def get_data(data_folder, hybrid=False):
     static_feature_list = []
     label_list = []
 
-    for file in os.listdir(data_folder): #each file is a folder, e.g. exams_part0
+    for file in os.listdir(data_folder):
         exam_folder = os.path.join(data_folder, file)
         print(f"exam folder: {exam_folder}")
 
-        # look into each file and add any of its records in set into feature and label list
-        # open and check 
         records = find_records(exam_folder)
         num_records = len(records)
 
@@ -81,7 +96,7 @@ def get_data(data_folder, hybrid=False):
                 continue
 
             label = load_label(record)
-            wave_feature_list.append(features.numpy())  # convert to numpy for stacking
+            wave_feature_list.append(features.numpy())  
 
             label_list.append(label)
 
@@ -89,7 +104,7 @@ def get_data(data_folder, hybrid=False):
                 age, sex = extract_static_features(record)
                 static_feature_list.append([age, sex])
 
-    wave_feature_array = (np.stack(wave_feature_list))  # shape (num_records, 4096, 12)
+    wave_feature_array = (np.stack(wave_feature_list))
     one_hot_labels = tf.one_hot(label_list, depth=2, dtype=tf.float32)
     if hybrid:
         static_array = np.array(static_feature_list, dtype=np.float32)
@@ -98,12 +113,16 @@ def get_data(data_folder, hybrid=False):
         return wave_feature_array, one_hot_labels
     
 
+
+"""
+Random sampling to control our dataset based on the limited number of 
+positive labeled cases within the dataset
+Returns a dataframe with the dataset we will train our model with.
+"""
 def random_sample(input_file):
-    INPUT_FILE = 'code15_input/code15_chagas_labels.csv'   # Replace with your actual input file
-    OUTPUT_FILE = 'filtered.csv'  # Output file name
 
 
-    df = pd.read_csv(INPUT_FILE)
+    df = pd.read_csv(input_file)
 
     print("Unique 'chagas' values:", df['chagas'].unique())
 
@@ -123,6 +142,9 @@ def random_sample(input_file):
     return combined_df
 
 
+"""
+Plot function to visualize 12 lead ECG data for the poster. 
+"""
 def plot_ecg(signal, chagas_positive=True, sampling_rate=400):
     """
     Plot the 12-lead ECG signal.
@@ -135,11 +157,11 @@ def plot_ecg(signal, chagas_positive=True, sampling_rate=400):
     ]
 
     if signal.shape[0] < signal.shape[1]:
-        # (time, leads) expected; if wrong, transpose
         signal = signal.T
 
     num_samples = signal.shape[0]
-    time_seconds = np.arange(num_samples) / sampling_rate  # time in seconds
+    #time in seconds
+    time_seconds = np.arange(num_samples) / sampling_rate 
 
     plt.figure(figsize=(10, 8))
 
@@ -151,9 +173,8 @@ def plot_ecg(signal, chagas_positive=True, sampling_rate=400):
             plt.xticks([])
         else:
             plt.xlabel('Time (s)', fontsize=8)
-            # Set ticks every 1 second
             max_time = time_seconds[-1]
-            ticks = np.arange(0, max_time + 1, 1)  # ticks at every 1 second
+            ticks = np.arange(0, max_time + 1, 1)  
             plt.xticks(ticks, fontsize=6)
 
         plt.yticks([])
@@ -167,24 +188,21 @@ def plot_ecg(signal, chagas_positive=True, sampling_rate=400):
     plt.tight_layout(rect=[0, 0, 1, 0.96])
     plt.show()
 
-
+"""
+Helper function for plotting 12 lead ECG data.
+"""
 def get_true(data_folder):
-
-    # records = find_records(data_folder)
-    # num_records = len(records)
-
     
     sample_df = random_sample("something")
     sample_exam_ids = set(sample_df['exam_id'].astype(str))
 
     print('Extracting features and labels from the data...')
 
-    for file in os.listdir(data_folder): #each file is a folder, e.g. exams_part0
+    for file in os.listdir(data_folder):
         exam_folder = os.path.join(data_folder, file)
         print(f"exam folder: {exam_folder}")
 
-        # look into each file and add any of its records in set into feature and label list
-        # open and check 
+
         records = find_records(exam_folder)
         num_records = len(records)
 

@@ -7,18 +7,14 @@ import numpy as np
 import random
 import math
 
-# ensures that we run only on cpu
-os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
-
-
+"""
+Basic MLP model that we used to test the viability of our data initially
+Did not spend much time hyperparameter tuning or optimizing in any way
+Subclassed from tf.keras model
+"""
 class MLP(tf.keras.Model):
     def __init__(self, classes):
-        """
-        This model class will contain the architecture for your CNN that
-        classifies images. Do not modify the constructor, as doing so
-        will break the autograder. We have left in variables in the constructor
-        for you to fill out, but you are welcome to change them if you'd like.
-        """
+
         super(MLP, self).__init__()
 
         # Initialize all hyperparameters

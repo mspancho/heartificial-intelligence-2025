@@ -11,7 +11,10 @@ import sys
 import wfdb
 
 from helper_code import is_integer, is_boolean, sanitize_boolean_value
-
+"""
+This file was a script forked from the challenge website to download the data into standardized wfdb 
+conventions.
+"""
 # Parse arguments.
 def get_parser():
     description = 'Prepare the CODE-15% dataset for the Challenge.'

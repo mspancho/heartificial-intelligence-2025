@@ -6,6 +6,9 @@ from helper_code import load_signals
 import pandas as pd
 import ast
 
+"""
+This file has some plotting functions used to generate graphics for our poster
+"""
 
 def extract_ecg_signal(record_path, max_length=2000):
     """

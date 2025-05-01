@@ -1,6 +1,11 @@
 import pandas as pd
 import numpy as np
 
+"""
+Code15% dataset gives a label csv and a data csv
+This file condenses the two into one csv file for easier lookup
+"""
+
 INPUT_FILE = 'code15_input/code15_chagas_labels.csv' 
 OUTPUT_FILE = 'filtered.csv' 
 

@@ -54,6 +54,7 @@ def train(model, optimizer, train_inputs, train_labels):
 """
 General test function, also records predictions/truth value of all input cases 
 to generate a confusion matrix
+Inputs the model to be operated on, as well as test data.
 """
 def test(model, test_inputs, test_labels):
 
@@ -78,7 +79,6 @@ def test(model, test_inputs, test_labels):
       all_preds.extend(preds.numpy())
       all_true.extend(true.numpy())
 
-      #prints confusion matrix for evaluation
       TP = 0
       FP = 0
       FN = 0
@@ -119,6 +119,10 @@ def test(model, test_inputs, test_labels):
    return float(total_acc/num_batches)
 
 
+"""
+This function takes in the loss list (generally fron the train function)
+to generate a graph of loss over batches
+"""
 def visualize_loss(losses,accuracies):
    x = [i for i in range(len(losses))]
    fig, ax1 = plt.subplots()
@@ -138,7 +142,10 @@ def visualize_loss(losses,accuracies):
    plt.title('Loss and Accuracy per Batch')
    plt.show()
 
-
+"""
+Main function
+Define model and hyperparameters, and run workflow.
+"""
 def main():
    LOCAL_TRAIN_FOLDER = 'train_data/'
    LOCAL_TEST_FOLDER = 'test_data/'
@@ -151,13 +158,8 @@ def main():
    mlp = MLP(2)
    model = CNN(2)
    gru = GRUsolo(input_size=12, hidden_size=128, num_layers=1, num_classes=2, dropout=0.5, recurrent_dropout=0.125)
-<<<<<<< HEAD
-   seq_models = [gru]
-   optimizer = tf.keras.optimizers.Adam(learning_rate=1e-3)
-=======
    seq_models = [model]
    optimizer = tf.keras.optimizers.Adam(learning_rate=3e-3)
->>>>>>> 4c99c63578498f4a9d9881633ca58b657877b546
 
    print('about to start training')
    epochs = 5
