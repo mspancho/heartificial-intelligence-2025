@@ -2,6 +2,7 @@ from __future__ import absolute_import
 from matplotlib import pyplot as plt
 from cnn_model import CNN
 from lstm_model import LSTMsolo, GRUsolo#, LSTMLP
+from mlp_model import MLP
 
 import os
 import tensorflow as tf
@@ -147,10 +148,16 @@ def main():
    print("Shape of inputs:", test_inputs.shape)
    print("Shape of one-hot labels:", test_labels.shape)
 
+   mlp = MLP(2)
    model = CNN(2)
    gru = GRUsolo(input_size=12, hidden_size=128, num_layers=1, num_classes=2, dropout=0.5, recurrent_dropout=0.125)
+<<<<<<< HEAD
    seq_models = [gru]
    optimizer = tf.keras.optimizers.Adam(learning_rate=1e-3)
+=======
+   seq_models = [model]
+   optimizer = tf.keras.optimizers.Adam(learning_rate=3e-3)
+>>>>>>> 4c99c63578498f4a9d9881633ca58b657877b546
 
    print('about to start training')
    epochs = 5
@@ -165,6 +172,13 @@ def main():
          all_accuracies.extend(epoch_accuracies)
 
       visualize_loss(all_losses, all_accuracies)
+
+      # with open('loss.txt', 'w') as f1:
+      #    f1.write(str(all_losses))
+
+      # with open('acc.txt', 'w') as f2:
+      #    f2.write(str(all_accuracies))
+
       print('done training')
 
       print(f"test acc: {test(model, test_inputs=test_inputs, test_labels=test_labels)}")

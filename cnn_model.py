@@ -16,37 +16,49 @@ class CNN(tf.keras.Model):
 
         # Input shape: (time_steps, channels)
 
-        self.conv1 = tf.keras.layers.Conv1D(16, kernel_size=7, strides=1, padding='same', activation='relu')
+        self.conv1 = tf.keras.layers.Conv1D(24, kernel_size=7, strides=1, padding='same', activation='relu')
+        self.conv2 = tf.keras.layers.Conv1D(24, kernel_size=7, strides=1, padding='same', activation='relu')
         self.bn1 = tf.keras.layers.BatchNormalization()
         self.pool1 = tf.keras.layers.MaxPooling1D(pool_size=2)
 
-        self.conv2 = tf.keras.layers.Conv1D(32, kernel_size=5, strides=1, padding='same', activation='relu')
+        self.conv3 = tf.keras.layers.Conv1D(48, kernel_size=7, strides=1, padding='same', activation='relu')
+        self.conv4 = tf.keras.layers.Conv1D(48, kernel_size=7, strides=1, padding='same', activation='relu')
         self.bn2 = tf.keras.layers.BatchNormalization()
         self.pool2 = tf.keras.layers.MaxPooling1D(pool_size=2)
 
-        self.conv3 = tf.keras.layers.Conv1D(128, kernel_size=3, strides=1, padding='same', activation='relu')
-        #self.bn3 = tf.keras.layers.BatchNormalization()
-        #self.pool3 = tf.keras.layers.MaxPooling1D(pool_size=2)
+
+        # self.conv1 = tf.keras.layers.Conv1D(256, kernel_size=21, strides=1, padding='same', activation='relu')
+        # self.bn1 = tf.keras.layers.BatchNormalization()
+        # self.pool1 = tf.keras.layers.MaxPooling1D(pool_size=2)
+
+        # self.conv2 = tf.keras.layers.Conv1D(128, kernel_size=11, strides=1, padding='same', activation='relu')
+        # self.bn2 = tf.keras.layers.BatchNormalization()
+        # self.pool2 = tf.keras.layers.MaxPooling1D(pool_size=2)
+
+        # self.conv3 = tf.keras.layers.Conv1D(64, kernel_size=5, strides=1, padding='same', activation='relu')
+        # self.bn3 = tf.keras.layers.BatchNormalization()
+        # self.pool3 = tf.keras.layers.MaxPooling1D(pool_size=2)
 
         self.flatten = tf.keras.layers.Flatten()
         self.dropout1 = tf.keras.layers.Dropout(0.4)
-        self.fc1 = tf.keras.layers.Dense(256, activation='relu')
+        self.fc1 = tf.keras.layers.Dense(128, activation='relu')
         self.dropout2 = tf.keras.layers.Dropout(0.4)
-        self.fc2 = tf.keras.layers.Dense(128, activation='relu')
-        self.dropout3 = tf.keras.layers.Dropout(0.4)
-        self.fc3 = tf.keras.layers.Dense(32, activation='relu')
+        self.fc2 = tf.keras.layers.Dense(64, activation='relu')
         self.output_layer = tf.keras.layers.Dense(2, activation='softmax')
+
 
     def call(self, inputs, is_training=False):
 
+        
         x = self.conv1(inputs)
         x = self.conv2(x)
-
-        x = self.bn1(x, training=is_training)
+        x = self.bn1(x)
         x = self.pool1(x)
 
+         
         x = self.conv3(x)
         x = self.conv4(x)
+<<<<<<< HEAD
         x = self.conv5(x)
         x = self.bn2(x, training=is_training)
         x = self.pool2(x)
@@ -54,12 +66,30 @@ class CNN(tf.keras.Model):
         x = self.conv3(x)
         x = self.bn3(x, training=is_training)
         x = self.pool3(x)
+=======
+        x = self.bn2(x)
+        x = self.pool2(x)
+
+       
+        # x = self.conv1(inputs)
+        # x = self.bn1(x, training=is_training)
+        # x = self.pool1(x)
+
+        # x = self.conv2(x)
+        # x = self.bn2(x, training=is_training)
+        # x = self.pool2(x)
+
+        # x = self.conv3(x)
+        # x = self.bn3(x, training=is_training)
+        # x = self.pool3(x)
+>>>>>>> 4c99c63578498f4a9d9881633ca58b657877b546
 
         x = self.flatten(x)
         x = self.dropout1(x, training=is_training)
         x = self.fc1(x)
-        #x = self.dropout2(x, training=is_training)
-        #x = self.fc2(x)
+        x = self.dropout2(x, training=is_training)
+        x = self.fc2(x)
+
 
 
         # print(f"shape of output {self.output_layer(x).shape}")
@@ -73,6 +103,10 @@ class CNN(tf.keras.Model):
         return cce(labels, logits)
 	
     def accuracy(self, logits, labels):
+
+        threshold = 0.3
+        
+        # max_logits = tf.cast(logits[:,1] > threshold, tf.int64)
         max_logits = tf.argmax(logits,axis=1)
         max_labels = tf.argmax(labels, axis=1)
 
