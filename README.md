@@ -9,8 +9,8 @@ In response to the George B. Moody Physionet challenge for 2025, this is our att
 We did this project as a final for our course CSCI1470 at Brown university. Please see the poster, write up, and some technical details below. Special thanks to Professor Eric Ewing for a great semester!
 
 #### Poster
+![heartificial_intelligence_dlday](https://github.com/user-attachments/assets/1295c658-48af-4615-9c6f-1b05d8cc3eca)
 
-INSERT POSTER HERE
 
 #### Write Up
 For those interested, please take a look at an indepth write up of our project [linked here](https://docs.google.com/document/d/1HzPNSQLeeYuLWzl6L6fi1B5jrJpqsSR4f7r5lWXN2Nk/edit?usp=sharing)
