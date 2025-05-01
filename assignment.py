@@ -11,6 +11,12 @@ import math
 from helper_code import *
 from preprocess import get_data
 
+"""
+Training loop recording loss and accuracy for graph generation.
+This train method is for one epoch and is therefore looped in main for i epochs
+Takes in a model, optimizer, as well as input train_inputs and train_labels
+"""
+
 def train(model, optimizer, train_inputs, train_labels):
    batch_size = 256
    num_batches = len(train_inputs) // batch_size
@@ -34,6 +40,7 @@ def train(model, optimizer, train_inputs, train_labels):
          loss_list.append(loss.numpy())  
 
       grads = g.gradient(loss, model.trainable_variables)
+      optimizer.build(model.trainable_variables)
       optimizer.apply_gradients(zip(grads, model.trainable_variables))
       
       batch_accuracy = float(model.accuracy(logits, batch_labels))
@@ -43,6 +50,10 @@ def train(model, optimizer, train_inputs, train_labels):
    return train_acc / num_batches, loss_list, accuracy_list
 
 
+"""
+General test function, also records predictions/truth value of all input cases 
+to generate a confusion matrix
+"""
 def test(model, test_inputs, test_labels):
 
    batch_size = 64
@@ -66,7 +77,11 @@ def test(model, test_inputs, test_labels):
       all_preds.extend(preds.numpy())
       all_true.extend(true.numpy())
 
-      TP = FP = FN = TN = 0
+      #prints confusion matrix for evaluation
+      TP = 0
+      FP = 0
+      FN = 0
+      TN = 0
 
       for t, p in zip(all_true, all_preds):
         if t == 1 and p == 1:
@@ -94,7 +109,6 @@ def test(model, test_inputs, test_labels):
    plt.ylabel('True')
    plt.title('Confusion Matrix')
 
-    # Annotate each cell with the number, adjusting text color for contrast
    for (i, j), val in np.ndenumerate(matrix):
         color = 'white' if matrix[i, j] > matrix.max() / 2 else 'black'
         ax.text(j, i, f'{val}', ha='center', va='center', color=color, fontsize=14, fontweight='bold')
@@ -135,7 +149,7 @@ def main():
 
    model = CNN(2)
    gru = GRUsolo(input_size=12, hidden_size=128, num_layers=1, num_classes=2, dropout=0.5, recurrent_dropout=0.125)
-   seq_models = [model, gru]
+   seq_models = [gru]
    optimizer = tf.keras.optimizers.Adam(learning_rate=1e-3)
 
    print('about to start training')

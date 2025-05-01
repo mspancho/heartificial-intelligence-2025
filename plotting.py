@@ -4,6 +4,8 @@ import matplotlib.pyplot as plt
 import tensorflow as tf
 from helper_code import load_signals
 import pandas as pd
+import ast
+
 
 def extract_ecg_signal(record_path, max_length=2000):
     """
@@ -45,16 +47,7 @@ def plot_ecg(signal, record_name=None):
     plt.tight_layout()
     plt.show()
 
-def main():
 
-    df1 = pd.read_csv('code15_input/code15_chagas_labels.csv')
-    df2 = pd.read_csv('code15_input/exams.csv')
-
-    # Merge based on 'exam_id'
-    merged_df = pd.merge(df1, df2, on='exam_id', how='inner') 
-
-    # Save the merged file
-    merged_df.to_csv('merged_file.csv', index=False)
 
 def random_sample(input_file):
     INPUT_FILE = 'code15_input/code15_chagas_labels.csv' 
@@ -79,6 +72,36 @@ def random_sample(input_file):
     print(f"Filtered dataset saved to {OUTPUT_FILE} with {len(combined_df)} samples.")
 
     return combined_df
+
+def load_clean_loss(file_path):
+    with open(file_path, 'r') as f:
+        content = f.read()
+    # Remove "np.float32(" and ")"
+    content = content.replace('np.float32(', '').replace(')', '')
+    # Now safely evaluate as a list of floats
+    loss_list = eval(content)
+    return np.array(loss_list, dtype=np.float32)
+
+
+def main():
+    # Read files as text
+    loss_arr1 = load_clean_loss('256_1e-3loss.txt')
+    loss_arr2 = load_clean_loss('256_1e-4loss.txt')
+
+    loss_arr3 = load_clean_loss('256_3e-3loss.txt')
+
+    # Plotting
+    plt.figure(figsize=(10, 6))
+    plt.plot(loss_arr1, label='1e-3 loss')
+    plt.plot(loss_arr2, label='1e-4 loss')
+    plt.plot(loss_arr3, label='3e-3 loss')
+
+    plt.xlabel('Epoch')
+    plt.ylabel('Loss')
+    plt.title('Loss Curves for Different Learning Rates')
+    plt.legend()
+    plt.grid(True)
+    plt.show()
 
 if __name__ == '__main__':
     main()

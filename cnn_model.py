@@ -46,14 +46,14 @@ class CNN(tf.keras.Model):
         x = self.pool1(x)
 
         x = self.conv3(x)
-        #x = self.conv4(x)
-        #x = self.conv5(x)
-        #x = self.bn2(x, training=is_training)
-        #x = self.pool2(x)
+        x = self.conv4(x)
+        x = self.conv5(x)
+        x = self.bn2(x, training=is_training)
+        x = self.pool2(x)
 
-        #x = self.conv3(x)
-        #x = self.bn3(x, training=is_training)
-        #x = self.pool3(x)
+        x = self.conv3(x)
+        x = self.bn3(x, training=is_training)
+        x = self.pool3(x)
 
         x = self.flatten(x)
         x = self.dropout1(x, training=is_training)

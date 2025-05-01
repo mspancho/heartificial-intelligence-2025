@@ -151,7 +151,10 @@ def plot_ecg(signal, chagas_positive=True, sampling_rate=400):
             plt.xticks([])
         else:
             plt.xlabel('Time (s)', fontsize=8)
-            plt.xticks(fontsize=6)
+            # Set ticks every 1 second
+            max_time = time_seconds[-1]
+            ticks = np.arange(0, max_time + 1, 1)  # ticks at every 1 second
+            plt.xticks(ticks, fontsize=6)
 
         plt.yticks([])
 
@@ -189,7 +192,7 @@ def get_true(data_folder):
             record = os.path.join(exam_folder, records[i])
 
             label = load_label(record)            
-            if  label == 1:
+            if  label == 0:
                 signal, fields = load_signals(record)
                 return signal
         

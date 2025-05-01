@@ -1,8 +1,8 @@
 import pandas as pd
 import numpy as np
 
-INPUT_FILE = 'code15_input/code15_chagas_labels.csv'   # Replace with your actual input file
-OUTPUT_FILE = 'filtered.csv'  # Output file name
+INPUT_FILE = 'code15_input/code15_chagas_labels.csv' 
+OUTPUT_FILE = 'filtered.csv' 
 
 
 df = pd.read_csv(INPUT_FILE)
