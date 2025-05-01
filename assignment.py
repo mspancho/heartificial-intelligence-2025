@@ -12,7 +12,6 @@ import math
 from helper_code import *
 from preprocess import get_data
 
-
 def train(model, optimizer, train_inputs, train_labels):
    batch_size = 256
    num_batches = len(train_inputs) // batch_size
@@ -105,6 +104,7 @@ def test(model, test_inputs, test_labels):
 
    return float(total_acc/num_batches)
 
+
 def visualize_loss(losses,accuracies):
    x = [i for i in range(len(losses))]
    fig, ax1 = plt.subplots()
@@ -168,4 +168,4 @@ def main():
 
 
 if __name__ == '__main__':
-   main()
+    main()
