@@ -137,8 +137,8 @@ def main():
    mlp = MLP(2)
    model = CNN(2)
    gru = GRUsolo(input_size=12, hidden_size=128, num_layers=1, num_classes=2, dropout=0.5, recurrent_dropout=0.125)
-   seq_models = [MLP(2)]
-   optimizer = tf.keras.optimizers.Adam(learning_rate=1e-3)
+   seq_models = [model]
+   optimizer = tf.keras.optimizers.Adam(learning_rate=3e-3)
 
    print('about to start training')
    epochs = 5

@@ -81,7 +81,11 @@ class CNN(tf.keras.Model):
         return cce(labels, logits)
 	
     def accuracy(self, logits, labels):
-        max_logits = tf.argmax(logits,axis=1)
+
+        threshold = 0.3
+        
+        max_logits = tf.cast(logits[:,1] > threshold)
+        # max_logits = tf.argmax(logits,axis=1)
         max_labels = tf.argmax(labels, axis=1)
 
         comp_pred_true = tf.equal(max_logits, max_labels)
