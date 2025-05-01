@@ -4,7 +4,7 @@ The disease begins acutely with fever, fatigue, and swelling near the infection 
 However, about 20–30% of infected individuals may develop chronic Chagas cardiomyopathies and require intensive care.
 Chagas disease has ben hypothesized to be detectable on a 12-lead ECG, and a fast deep learning model has the potential to promote widespread preliminary testing, efficient treatment, and vector control.
 
-In response to the George B. Moody Physionet challenge for 2025, this is our attempt to create a diagnostic model that classifies Chagas disease from 12 lead ECG data using a convolutional neural network.
+In response to the George B. Moody Physionet Challenge for 2025, this is our attempt to create a diagnostic model that classifies Chagas disease from 12 lead ECG data using a convolutional neural network.
 
 We did this project as a final for our course CSCI1470 at Brown university. Please see the poster, write up, and some technical details below. Special thanks to Professor Eric Ewing for a great semester!
 
