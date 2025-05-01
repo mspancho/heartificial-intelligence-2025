@@ -2,6 +2,7 @@ from __future__ import absolute_import
 from matplotlib import pyplot as plt
 from cnn_model import CNN
 from lstm_model import LSTMsolo, GRUsolo#, LSTMLP
+from mlp_model import MLP
 
 import os
 import tensorflow as tf
@@ -50,6 +51,9 @@ def test(model, test_inputs, test_labels):
    num_batches = len(test_inputs)//batch_size
    total_acc = 0.0
 
+   all_preds = []
+   all_true = []
+
    for batch_num in range(num_batches):
       batch_inputs = test_inputs[batch_num * batch_size : (batch_num + 1) * batch_size]
       batch_labels = test_labels[batch_num * batch_size : (batch_num + 1) * batch_size]
@@ -58,7 +62,46 @@ def test(model, test_inputs, test_labels):
       acc = model.accuracy(logits, batch_labels)
       total_acc += acc
 
+      preds = tf.argmax(logits, axis=1)
+      true = tf.argmax(batch_labels, axis=1)
+        
+      all_preds.extend(preds.numpy())
+      all_true.extend(true.numpy())
 
+      TP = FP = FN = TN = 0
+
+      for t, p in zip(all_true, all_preds):
+        if t == 1 and p == 1:
+            TP += 1
+        elif t == 0 and p == 1:
+            FP += 1
+        elif t == 1 and p == 0:
+            FN += 1
+        elif t == 0 and p == 0:
+            TN += 1
+
+   print("\nConfusion Matrix:")
+   print(f"TP: {TP}, FP: {FP}, FN: {FN}, TN: {TN}\n")
+
+   matrix = np.array([[TN, FP],
+                       [FN, TP]])
+
+   fig, ax = plt.subplots()
+   cax = ax.matshow(matrix, cmap='Blues')
+   plt.colorbar(cax)
+
+   ax.set_xticklabels([''] + ['0', '1'])
+   ax.set_yticklabels([''] + ['0', '1'])
+   plt.xlabel('Predicted')
+   plt.ylabel('True')
+   plt.title('Confusion Matrix')
+
+    # Annotate each cell with the number, adjusting text color for contrast
+   for (i, j), val in np.ndenumerate(matrix):
+        color = 'white' if matrix[i, j] > matrix.max() / 2 else 'black'
+        ax.text(j, i, f'{val}', ha='center', va='center', color=color, fontsize=14, fontweight='bold')
+
+   plt.show()
 
    return float(total_acc/num_batches)
 
@@ -91,9 +134,10 @@ def main():
    print("Shape of inputs:", test_inputs.shape)
    print("Shape of one-hot labels:", test_labels.shape)
 
+   mlp = MLP(2)
    model = CNN(2)
    gru = GRUsolo(input_size=12, hidden_size=128, num_layers=1, num_classes=2, dropout=0.5, recurrent_dropout=0.125)
-   seq_models = [model, gru]
+   seq_models = [MLP(2)]
    optimizer = tf.keras.optimizers.Adam(learning_rate=1e-3)
 
    print('about to start training')
@@ -109,6 +153,13 @@ def main():
          all_accuracies.extend(epoch_accuracies)
 
       visualize_loss(all_losses, all_accuracies)
+
+      # with open('loss.txt', 'w') as f1:
+      #    f1.write(str(all_losses))
+
+      # with open('acc.txt', 'w') as f2:
+      #    f2.write(str(all_accuracies))
+
       print('done training')
 
       print(f"test acc: {test(model, test_inputs=test_inputs, test_labels=test_labels)}")
