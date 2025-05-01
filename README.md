@@ -1,16 +1,17 @@
 # Tensorflow implementation for George B. Moody PhysioNet Challenge 2025
-Chagas disease is a tropical parasitic illness caused by the protozoan Trypanosoma cruzi, primarily induced by triatomine bugs. It is endemic to Central and South America but can also be found in other parts of the world through migration. 
+Chagas disease is a parasitic illness caused by the protozoan Trypanosoma cruzi, primarily induced by triatomine bugs. It is endemic to Central and South America but can also be found in other parts of the world through migration. 
 The disease begins acutely with fever, fatigue, and swelling near the infection site.
 However, about 20–30% of infected individuals may develop chronic Chagas cardiomyopathies and require intensive care.
-Chagas disease has ben hypothesized to be detectable on a 12-lead ECG, and fast deep learning could enable more widespread preliminary testing, efficient treatment, and vector control.
+Chagas disease has ben hypothesized to be detectable on a 12-lead ECG, and a fast deep learning model has the potential to promote widespread preliminary testing, efficient treatment, and vector control.
 
-In response to the George B. Moody Physionet challenge for 2025, this is our attempt to create a diagnostic model that classifies Chagas disease from 12 lead ECG data using a convolutional neural network.
+In response to the George B. Moody Physionet Challenge for 2025, this is our attempt to create a diagnostic model that classifies Chagas disease from 12 lead ECG data using a convolutional neural network.
 
 We did this project as a final for our course CSCI1470 at Brown university. Please see the poster, write up, and some technical details below. Special thanks to Professor Eric Ewing for a great semester!
 
-## Poster
 
-INSERT POSTER HERE
+## Poster
+![heartificial_intelligence_dlday](https://github.com/user-attachments/assets/1295c658-48af-4615-9c6f-1b05d8cc3eca)
+
 
 ## Write Up
 For those interested, please take a look at an indepth write up of our project [linked here](https://docs.google.com/document/d/1HzPNSQLeeYuLWzl6L6fi1B5jrJpqsSR4f7r5lWXN2Nk/edit?usp=sharing)
