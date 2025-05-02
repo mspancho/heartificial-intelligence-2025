@@ -9,8 +9,10 @@ import math
 
 """
 We began implementing LSTM and GRU models to generate further results
-However, due to computational limitations we did not
-fully explore the viability of these approaches.
+We were able to fully implement and run the GRU, to generate some
+preliminary results.
+However, due to time constraints and computational limitations, we were unable
+to fully explore these avenues - potential futurew work!
 """
 class LSTMsolo(tf.keras.Model):
     def __init__(self, input_size, hidden_size=128, 

@@ -6,7 +6,7 @@ Chagas disease has ben hypothesized to be detectable on a 12-lead ECG, and a fas
 
 In response to the George B. Moody Physionet Challenge for 2025, this is our attempt to create a diagnostic model that classifies Chagas disease from 12 lead ECG data using a convolutional neural network.
 
-We did this project as a final for our course CSCI1470 at Brown university. Please see the poster, write up, and some technical details below. Special thanks to Professor Eric Ewing for a great semester!
+We did this as final project for our CSCI 1470 at Brown university. Please see the poster, write up, and some technical details below. Special thanks to Professor Eric Ewing for a great semester!
 
 
 ## Poster
@@ -14,7 +14,7 @@ We did this project as a final for our course CSCI1470 at Brown university. Plea
 
 
 ## Write Up
-For those interested, please take a look at an indepth write up of our project [linked here](https://docs.google.com/document/d/1HzPNSQLeeYuLWzl6L6fi1B5jrJpqsSR4f7r5lWXN2Nk/edit?usp=sharing)
+For those interested, please take a look at an in depth write up of our project [linked here](https://docs.google.com/document/d/1HzPNSQLeeYuLWzl6L6fi1B5jrJpqsSR4f7r5lWXN2Nk/edit?usp=sharing)
 
 
 
