@@ -44,4 +44,4 @@ With more compute, it would be more ideal to randomize the train/test split ever
 
 
 ## Contact Us!
-Intrigued? Please email stephen_c_yang@brown.edu and brandon_lien@brown.edu with any questions or comments :)
+Intrigued? Please email stephen_c_yang@brown.edu, brandon_lien@brown.edu, mason_usher@brown.edu, and/or manan_pancholy@brown.edu with any questions or comments :)
