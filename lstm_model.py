@@ -47,7 +47,7 @@ class LSTMsolo(tf.keras.Model):
         return accuracy
 
 class GRUsolo(tf.keras.Model):
-    def __init__(self, input_size, hidden_size=128, 
+    def __init__(self, hidden_size=128, 
                  num_layers=1, num_classes=2, 
                  dropout=0.5, recurrent_dropout=0.125):
         super(GRUsolo, self).__init__()

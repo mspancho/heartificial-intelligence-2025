@@ -47,6 +47,28 @@ def load_label(record):
     label = get_label(header)
     return label
 
+### Helper Challenge functions
+
+# Load a text file as a string.
+def load_text(filename):
+    with open(filename, 'r') as f:
+        string = f.read()
+    return string
+
+# Save a string as a text file.
+def save_text(filename, string):
+    with open(filename, 'w') as f:
+        f.write(string)
+
+# Get a variable from a string.
+def get_variable(string, variable_name):
+    variable = ''
+    has_variable = False
+    for l in string.split('\n'):
+        if l.startswith(variable_name):
+            variable = l[len(variable_name):].strip()
+            has_variable = True
+    return variable, has_variable
 
 # Get the header file for a record.
 def get_header_file(record):

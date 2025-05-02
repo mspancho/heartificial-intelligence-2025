@@ -32,6 +32,7 @@ def train(model, optimizer, train_inputs, train_labels):
    accuracy_list = []   
 
    for batch_num in range(num_batches):
+      print(f"batch {batch_num+1}/{num_batches}")
       batch_inputs = training_inputs[batch_num * batch_size : (batch_num + 1) * batch_size]
       batch_labels = training_labels[batch_num * batch_size : (batch_num + 1) * batch_size]
 
@@ -157,15 +158,16 @@ def main():
 
    mlp = MLP(2)
    model = CNN(2)
-   gru = GRUsolo(input_size=12, hidden_size=128, num_layers=1, num_classes=2, dropout=0.5, recurrent_dropout=0.125)
-   seq_models = [model]
-   optimizer = tf.keras.optimizers.Adam(learning_rate=3e-3)
+   gru = GRUsolo(hidden_size=64, num_layers=1, num_classes=2, dropout=0.4, recurrent_dropout=0.0)
+   seq_models = [gru] # try just gru for now
+   optims = [tf.keras.optimizers.Adam(learning_rate=1e-4) for _ in seq_models]
 
    print('about to start training')
    epochs = 5
-   for model in seq_models:
+   for i, model in enumerate(seq_models):
       all_losses = []
       all_accuracies = []
+      optimizer = optims[i]
 
       for epoch in range(epochs):
          acc, epoch_losses, epoch_accuracies = train(model, optimizer, train_inputs, train_labels)

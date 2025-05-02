@@ -64,7 +64,7 @@ def get_data(data_folder, hybrid=False):
     # num_records = len(records)
 
     
-    sample_df = random_sample("something")
+    sample_df = random_sample("code15_chagas_labels.csv")
     sample_exam_ids = set(sample_df['exam_id'].astype(str))
 
     print('Extracting features and labels from the data...')
@@ -137,7 +137,7 @@ def random_sample(input_file):
     sampled_false_df = false_df.sample(n=num_false_to_sample, random_state=42)
 
     combined_df = pd.concat([true_df, sampled_false_df]).sample(frac=1, random_state=42).reset_index(drop=True)
-    print(f"Filtered dataset saved to {OUTPUT_FILE} with {len(combined_df)} samples.")
+    # print(f"Filtered dataset saved to {OUTPUT_FILE} with {len(combined_df)} samples.")
 
     return combined_df
 
