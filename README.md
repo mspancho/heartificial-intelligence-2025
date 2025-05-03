@@ -12,9 +12,15 @@ We did this as final project for our CSCI 1470 at Brown university. Please see t
 ## Poster
 ![heartificial_intelligence_dlday](https://github.com/user-attachments/assets/1295c658-48af-4615-9c6f-1b05d8cc3eca)
 
-
 ## Write Up
 For those interested, please take a look at an in depth write up of our project [linked here](https://docs.google.com/document/d/1HzPNSQLeeYuLWzl6L6fi1B5jrJpqsSR4f7r5lWXN2Nk/edit?usp=sharing)
+
+## Check in #2
+[Here is a link](https://docs.google.com/document/d/1vRse07oV145fnBB3EFK5Ktql4lflIMEadti7uixGVt8/edit?usp=sharing) to our second check in write-up
+
+## Check in #3
+[Here is a link](https://docs.google.com/document/d/1n86f08XO5oxXCfJq7rixwc0MfyYu7QG5uqFHY4fxi4Y/edit?usp=sharing) to our third check in write-up
+
 
 
 
