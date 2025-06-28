@@ -10,7 +10,7 @@ We did this as final project for our CSCI 1470 at Brown university. Please see t
 
 
 ## Poster
-![heartificial_intelligence_dlday](https://github.com/user-attachments/assets/1295c658-48af-4615-9c6f-1b05d8cc3eca)
+![heartificial_intelligence_dlday](assets/final_poster.jpg)
 
 ## Write Up
 For those interested, please take a look at an in depth write up of our project [linked here](https://docs.google.com/document/d/1HzPNSQLeeYuLWzl6L6fi1B5jrJpqsSR4f7r5lWXN2Nk/edit?usp=sharing)
